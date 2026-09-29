@@ -1,0 +1,192 @@
+/* LightAnchor (brief 4.3, 4.11). The anchor box is positioned by the section's class;
+   these defaults have zero specificity so that class always wins. */
+:where(.anchor) {
+  position: relative;
+  display: block;
+  pointer-events: none;
+}
+
+/* ── Overcast CSS light: only without live WebGL (no JS, webgl off or failed) ── */
+.light {
+  display: none;
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  --skew: 0.2;
+  --k: calc(var(--skew) * 100cqh);
+  --pane-a: #e5d2a4;
+  --pane-b: #e0cc9c;
+  --warm: 0;
+}
+
+html:not([data-js]) .light,
+html[data-webgl='off'] .light,
+html[data-webgl='failed'] .light {
+  display: block;
+}
+
+/* The visitor's sun below the horizon fades the light (5.5); --on is written in Overcast. */
+.light {
+  opacity: var(--on, 1);
+  transition: opacity 400ms linear;
+}
+
+html[data-motion='reduced'] .light {
+  transition: none;
+}
+
+/* Colours are the compositor's lit wall at each hour (6.1.3 maths: the chapter's shade,
+   its sun and E_sun). A word pane is dim between the letters, because the glass moves
+   that light into the letters (uFill 0.07 plus loose spill: 11% to 8% of the sun). */
+/* --light-focus (0..1, default 1) may be set by the section on the anchor: loose light
+   (focus 0) spreads over the whole pane at the lit-wall value; a formed word (focus 1)
+   leaves the pane dim around bright letters. */
+.light[data-ch='appointment'] {
+  --skew: 0.11;
+  --pane-a: color-mix(in oklab, #e7dec5, #857963 calc(var(--light-focus, 1) * 100%));
+  --pane-b: color-mix(in oklab, #e3d9bf, #776d5b calc(var(--light-focus, 1) * 100%));
+}
+
+.light[data-ch='write-yours'] {
+  --skew: 0.3;
+  --pane-a: color-mix(in oklab, #e6dabb, #84755c calc(var(--light-focus, 1) * 100%));
+  --pane-b: color-mix(in oklab, #e2d4b4, #756955 calc(var(--light-focus, 1) * 100%));
+}
+
+/* The ledger's loose band: the lit wall at 18:20, 92% to 80% of the sun. */
+.light[data-ch='ledger'] {
+  --skew: 0.9;
+  --pane-a: #e5d2a4;
+  --pane-b: #e0cc9c;
+}
+
+/* A long band of low sun weakens along its length, away from the window (upper left). */
+.light[data-ch='ledger'] .fill .shape {
+  background:
+    linear-gradient(to right, rgb(58 65 66 / 0) 0%, rgb(58 65 66 / 0) 35%, rgb(58 65 66 / 0.16) 100%),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--pane-a), #ff9b54 calc(var(--warm) * 9%)),
+      color-mix(in oklab, var(--pane-b), #ff9b54 calc(var(--warm) * 9%))
+    );
+}
+
+@media (min-width: 1024px) and (min-aspect-ratio: 9/10) {
+  .light[data-ch='appointment'] {
+    --skew: 0.35;
+  }
+}
+
+.fill,
+.pen {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+}
+
+/* The penumbra is a sibling: a clip-path clips its own pseudo-elements, so the blur
+   lives on a wrapper around the clipped shape. */
+.pen {
+  filter: blur(14px);
+  opacity: 0.55;
+}
+
+.fill {
+  filter: blur(1.5px);
+}
+
+.shape {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0 0, calc(100% - var(--k)) 0, 100% 100%, var(--k) 100%);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--pane-a), #ff9b54 calc(var(--warm) * 9%)),
+    color-mix(in oklab, var(--pane-b), #ff9b54 calc(var(--warm) * 9%))
+  );
+}
+
+/* The word as DOM light: Sprat at the raster face's axes, in the one accent. */
+.word {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--f-display);
+  font-weight: 120;
+  font-stretch: 122%;
+  font-style: normal;
+  /* sized to the parallelogram's width (w - k) and sheared with the slant, as the
+     compositor maps the raster into patch space (6.0) */
+  font-size: min(30cqh, calc((100cqw - var(--k)) * 1.5 / var(--chars, 6)));
+  transform: skewX(atan(var(--skew)));
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--c-sun);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* A word outside Sprat's letters: Geologica 600 (3.2). */
+.wordText {
+  font-family: var(--f-text);
+  font-weight: 600;
+  font-stretch: 100%;
+}
+
+/* ── the day still moves through the CSS light (4.11): slide, lengthen and warm across
+   each patch's pass through the viewport. Scroll-linked, so it is off under Still air. ── */
+@property --warm {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@keyframes day {
+  from {
+    transform: translateX(var(--dx0, 0)) skewX(var(--sk0, 0deg)) scaleX(var(--sx0, 1));
+    --warm: 0;
+  }
+  to {
+    transform: translateX(var(--dx1, 0)) skewX(var(--sk1, 0deg)) scaleX(var(--sx1, 1));
+    --warm: 1;
+  }
+}
+
+.light[data-ch='appointment'] {
+  --dx0: 0;
+  --dx1: -3vw;
+  --sk0: -1.5deg;
+  --sk1: 1.5deg;
+}
+
+@media (min-width: 1024px) and (min-aspect-ratio: 9/10) {
+  .light[data-ch='appointment'] {
+    --dx1: -6vw;
+    --sk0: -2.5deg;
+    --sk1: 2.5deg;
+  }
+}
+
+.light[data-ch='write-yours'] {
+  --sk0: -1deg;
+  --sk1: 1deg;
+  --sx0: 0.98;
+  --sx1: 1.02;
+}
+
+.light[data-ch='ledger'] {
+  --dx0: 2vw;
+  --dx1: -2vw;
+  --sx0: 0.97;
+  --sx1: 1.03;
+}
+
+@supports (animation-timeline: view()) {
+  html:not([data-motion='reduced']) .fill,
+  html:not([data-motion='reduced']) .pen {
+    animation: day linear both;
+    animation-timeline: view();
+    animation-range: cover 10% cover 90%;
+  }
+}

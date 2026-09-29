@@ -1,0 +1,359 @@
+/* Dusk (5.8). Stacked by default; the split composition (>= 1024 px, aspect >= 0.9) places the
+   ember at left 58%, top 16% of the footer and the lower block on the 12-column grid. */
+.dusk {
+  --ember-w: 72px;
+  --ember-h: 18px;
+  position: relative;
+  min-height: 70svh;
+  display: flex;
+  flex-direction: column;
+  padding-top: calc(var(--nav-h) + var(--sp-6));
+  /* the canvas draws the skirting board at 94% of the footer's visible area (6.1.4) */
+  padding-bottom: calc(4.2svh + var(--sp-7));
+  outline: none;
+}
+
+/* Overcast and no JS: the blue-hour wall is the footer's own ground (3.1). */
+:global(html[data-webgl='off']) .dusk,
+:global(html[data-webgl='failed']) .dusk,
+:global(html:not([data-webgl])) .dusk {
+  /* the wall turns to blue hour across the top of the footer, as the canvas does between chapters */
+  background: linear-gradient(to bottom, rgb(39 44 54 / 0), var(--c-dusk) min(30%, 14rem));
+}
+
+/* ── the ember and the epilogue ─────────────────────────────── */
+.top {
+  align-items: start;
+}
+
+.emberBlock {
+  position: relative;
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: var(--ember-w);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ember {
+  width: var(--ember-w);
+  height: var(--ember-h);
+}
+
+/* Overcast ember: CSS light in the canvas's ember colour, the patch's 0.14 slant, a soft penumbra. */
+:global(html[data-webgl='off']) .ember,
+:global(html[data-webgl='failed']) .ember,
+:global(html:not([data-webgl])) .ember {
+  filter: blur(1.5px);
+}
+
+:global(html[data-webgl='off']) .ember::before,
+:global(html[data-webgl='failed']) .ember::before,
+:global(html:not([data-webgl])) .ember::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, #ff9b54, #f08a45);
+  clip-path: polygon(0 0, calc(100% - 0.14 * var(--ember-h)) 0, 100% 100%, calc(0.14 * var(--ember-h)) 100%);
+}
+
+.emberBlock[data-ember='off'] .ember {
+  visibility: hidden;
+}
+
+/* The fixation dot, at the ember's centre, above the canvas. */
+.fixation {
+  position: absolute;
+  left: calc(var(--ember-w) / 2 - 1.5px);
+  top: calc(var(--ember-h) / 2 - 1.5px);
+  width: 3px;
+  height: 3px;
+  background: var(--c-umber);
+  pointer-events: none;
+}
+
+/* "The epilogue button 20 px under it" (5.8), measured to the button's text, not its 44 px hit box:
+   the ember then reads as the button's own light, not a dot floating above the column. */
+.epilogue {
+  margin-top: 8px;
+  width: max-content;
+  max-width: calc(100vw - 2 * var(--margin));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.start {
+  display: inline-flex;
+}
+
+.hold {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  outline: none;
+}
+
+.timer {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.hairline {
+  position: relative;
+  width: 120px;
+  height: 1px;
+  background: rgb(188 195 190 / 0.22);
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  background: var(--c-lime);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  animation: fill 18s linear forwards;
+}
+
+@keyframes fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Still air: the hairline stays still; the seconds still count down. */
+:global(html[data-motion='reduced']) .fill {
+  animation: none;
+}
+
+.seconds {
+  min-width: 2ch;
+  text-align: right;
+  color: var(--c-lime);
+}
+
+.caption {
+  color: var(--c-dust);
+  max-width: 34ch;
+}
+
+/* ── the afterimage field (portalled to body) ───────────────── */
+.field {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-epilogue);
+  background: var(--c-field);
+  color: var(--c-field-ink);
+  opacity: 1;
+}
+
+.field[data-leaving] {
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-light);
+  pointer-events: none;
+}
+
+/* Leaving: the copy and the dot go first (240 ms), so only the flat grey field makes the one slow
+   1.2 s fade, and no field text ever sits over the footer's wordmark and lines. */
+.field[data-leaving] .fieldCopy,
+.field[data-leaving] .fieldDot {
+  opacity: 0;
+  transition: opacity var(--dur-state) var(--ease-focus);
+}
+
+.fieldDot {
+  position: fixed;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  background: var(--c-field-ink);
+  pointer-events: none;
+}
+
+.fieldCopy {
+  position: absolute;
+  left: var(--margin);
+  right: var(--margin);
+  bottom: max(var(--sp-9), 12svh);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-5);
+  max-width: 34rem;
+  opacity: 0;
+  transition: opacity var(--dur-fade) var(--ease-focus);
+}
+
+.fieldCopy[data-on] {
+  opacity: 1;
+}
+
+.fieldText {
+  color: var(--c-field-ink);
+}
+
+.fieldButton {
+  min-height: 44px;
+  padding: 0 22px;
+  border: 1px solid var(--c-field-ink);
+  color: var(--c-field-ink);
+  transition: background-color var(--dur-tick) var(--ease-focus);
+}
+
+.fieldButton:focus-visible {
+  outline-color: var(--c-field-ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fieldButton:hover {
+    background: rgb(22 24 26 / 0.08);
+  }
+}
+
+/* ── the lower block ────────────────────────────────────────── */
+.lower {
+  margin-top: auto;
+  padding-top: var(--sp-7);
+  row-gap: var(--sp-6);
+  align-items: end;
+}
+
+.name {
+  grid-column: 1 / -1;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+/* The widest drawing (wdth 200, wght 40) at --t-footmark, never wider than its column:
+   the word's advance is about 5.3 em, so 18.8cqi is the size at which it fills the column. */
+.name .footmark {
+  font-size: min(var(--t-footmark), 18.8cqi);
+  color: #505859;
+  white-space: nowrap;
+  margin-left: -0.03em;
+  user-select: none;
+}
+
+.lines {
+  margin-top: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  color: var(--c-lime);
+}
+
+.lines p + p {
+  color: var(--c-dust);
+}
+
+.aside {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--sp-5);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--c-lime);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--c-dust);
+  transition: text-decoration-color var(--dur-tick) var(--ease-focus);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    text-decoration-color: var(--c-sun);
+  }
+}
+
+.sunset {
+  min-width: 30ch;
+  min-height: 1.5em;
+  color: var(--c-dust);
+}
+
+/* Overcast skirting board: the dusk wall at 92% in linear light, a 1 px bevel highlight. */
+.skirting {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6%;
+  background: #252a34;
+  border-top: 1px solid #292e38;
+  pointer-events: none;
+}
+
+.skirting::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 1px);
+  height: 6px;
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0), rgb(0 0 0 / 0.1));
+}
+
+@media (min-width: 768px) {
+  .aside {
+    grid-column: 1 / span 5;
+  }
+
+  .links {
+    flex-direction: column;
+  }
+}
+
+/* ── split composition ──────────────────────────────────────── */
+@media (min-width: 1024px) and (min-aspect-ratio: 9 / 10) {
+  .dusk {
+    --ember-w: 100px;
+    --ember-h: 24px;
+  }
+
+  .lower {
+    padding-top: var(--sp-8);
+  }
+
+  .dusk {
+    /* the ember sits at about 16% of the footer (5.0), and never above the nav */
+    padding-top: max(calc(var(--nav-h) + var(--sp-4)), 11.2svh);
+  }
+
+  /* at the start of column 8 (58.5% of the viewport: the brief's "left 58%", on the grid) */
+  .emberBlock {
+    grid-column: 8 / span 5;
+    justify-self: start;
+    align-items: flex-start;
+  }
+
+  .epilogue {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  /* The wordmark hangs from the top of the lower block, level with the links, so it rises into the
+     empty wall left of the ember instead of pooling at the foot of the page with the lines. */
+  .name {
+    grid-column: 1 / span 7;
+    align-self: start;
+  }
+
+  .aside {
+    grid-column: 8 / span 5;
+  }
+}

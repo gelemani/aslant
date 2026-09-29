@@ -1,0 +1,486 @@
+@import '../src/styles/tokens.css';
+
+/* ─────────────────────────────────────────────────────────────
+   Aslant · global layer (brief 3, 4.4, 4.11, 4.12, 4.14)
+   Motion gating in CSS reads html[data-motion] only (never the
+   prefers-reduced-motion media query), set once by the head script.
+   ───────────────────────────────────────────────────────────── */
+
+/* ── reset ─────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  font-synthesis: none; /* Sprat's weight axis stops at 200: never a synthetic bold */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: clip; /* clip, never hidden: sticky keeps working (3.4) */
+  overscroll-behavior-x: none;
+}
+
+/* Scroll locks (menu, colophon, epilogue; SmoothScroll stopScroll/startScroll, 4.7). Lenis
+   also stops itself; under native scroll this is what keeps the page still. */
+html[data-scroll-lock] {
+  overflow: hidden;
+}
+
+html {
+  overscroll-behavior-y: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-line) transparent;
+  background: var(--c-shade);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  /* The next/font variables live on <body> (7.2), so the family stacks that read them
+     are re-resolved here: at :root, var(--font-sprat) is still undefined. */
+  --f-display: var(--font-sprat), 'Times New Roman', serif;
+  --f-text: var(--font-geologica-ext), var(--font-geologica), system-ui, sans-serif;
+  min-height: 100svh;
+  background: var(--c-shade);
+  color: var(--c-lime);
+  caret-color: var(--c-sun);
+  font: 360 var(--t-body) / 1.6 var(--f-text);
+  letter-spacing: 0.005em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd,
+ol,
+ul {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: inherit;
+  font-size: inherit;
+  text-wrap: balance;
+}
+
+p,
+li,
+dd {
+  text-wrap: pretty;
+}
+
+ol,
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+img,
+picture,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  margin: 0;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+input,
+select,
+textarea {
+  border-radius: var(--radius);
+}
+
+cite {
+  font-style: normal;
+}
+
+q {
+  quotes: '\201C' '\201D' '\2018' '\2019';
+}
+
+dialog {
+  color: inherit;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ── browser surfaces (3.1.4) ──────────────────────────────── */
+::selection {
+  background: var(--c-sun);
+  color: var(--c-umber);
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-sun);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--c-dust);
+  transition: text-decoration-color var(--dur-tick) var(--ease-focus);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:hover {
+    text-decoration-color: var(--c-sun);
+  }
+}
+
+/* The sunlit panel (commission): umber focus, caret and selection edge. */
+[data-surface='sunlit'] {
+  caret-color: var(--c-umber);
+  color: var(--c-umber);
+}
+
+[data-surface='sunlit'] :focus-visible {
+  outline-color: var(--c-umber);
+}
+
+[data-surface='sunlit'] a {
+  text-decoration-color: var(--c-umber-soft);
+}
+
+/* ── type classes (3.2) ────────────────────────────────────────
+   Each sets the font shorthand (resets weight, stretch, style and
+   line-height), then the axes explicitly. Components never set
+   font-weight, font-stretch or font-variation-settings themselves. */
+.t-clock {
+  font: var(--t-clock) / 0.9 var(--f-display);
+  font-weight: 20;
+  font-stretch: 150%;
+  font-variation-settings: normal;
+  letter-spacing: 0;
+}
+
+.t-hero {
+  font: var(--t-hero) / 1.02 var(--f-display);
+  font-weight: 44;
+  font-stretch: 150%;
+  font-variation-settings: normal;
+  letter-spacing: 0;
+}
+
+.t-h2 {
+  font: var(--t-h2) / 1.06 var(--f-display);
+  font-weight: 40;
+  font-stretch: var(--h2-wdth-sm, 115%);
+  font-variation-settings: normal;
+  letter-spacing: 0;
+}
+
+.t-year {
+  font: var(--t-year) / 1 var(--f-display);
+  font-weight: 26;
+  font-stretch: 140%;
+  font-variation-settings: normal;
+  letter-spacing: 0;
+}
+
+.t-h3 {
+  font: var(--t-h3) / 1.12 var(--f-display);
+  font-weight: 60;
+  font-stretch: 150%;
+  font-variation-settings: normal;
+  letter-spacing: 0;
+}
+
+.t-menu {
+  font: var(--t-menu) / 1 var(--f-display);
+  font-weight: 40;
+  font-stretch: 170%;
+  font-variation-settings: normal;
+  letter-spacing: 0;
+}
+
+.t-wordmark {
+  font: var(--t-wordmark) / 1 var(--f-display);
+  font-weight: 110;
+  font-stretch: 135%;
+  font-variation-settings: normal;
+  letter-spacing: 0;
+}
+
+.t-footmark {
+  font: var(--t-footmark) / 0.9 var(--f-display);
+  font-weight: 40;
+  font-stretch: 200%;
+  font-variation-settings: normal;
+  letter-spacing: 0;
+}
+
+.t-lead {
+  font: var(--t-lead) / 1.5 var(--f-text);
+  font-weight: 340;
+  font-stretch: normal;
+  font-variation-settings: normal;
+  letter-spacing: 0.003em;
+}
+
+.t-body {
+  font: var(--t-body) / 1.6 var(--f-text);
+  font-weight: 360;
+  font-stretch: normal;
+  font-variation-settings: normal;
+  letter-spacing: 0.005em;
+  max-width: 64ch;
+}
+
+.t-ui {
+  font: var(--t-ui) / 1.2 var(--f-text);
+  font-weight: 520;
+  font-stretch: normal;
+  font-variation-settings: 'SHRP' 100;
+  letter-spacing: 0.01em;
+}
+
+.t-label {
+  font: var(--t-label) / 1.4 var(--f-text);
+  font-weight: 420;
+  font-stretch: normal;
+  font-variation-settings: 'SHRP' 100;
+  letter-spacing: 0.01em;
+}
+
+.t-value {
+  font: var(--t-value) / 1.4 var(--f-text);
+  font-weight: 460;
+  font-stretch: normal;
+  font-variation-settings: 'SHRP' 100;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.t-caption {
+  font: var(--t-caption) / 1.5 var(--f-text);
+  font-weight: 380;
+  font-stretch: normal;
+  font-variation-settings: normal;
+  letter-spacing: 0.005em;
+}
+
+/* Breakpoint axes (3.2 table). The H2 width per chapter is set by each
+   section through --h2-wdth (desktop) and --h2-wdth-sm (below 768 px). */
+@media (min-width: 768px) {
+  .t-clock {
+    font-weight: 14;
+    font-stretch: 185%;
+  }
+
+  .t-hero {
+    font-weight: 40;
+    font-stretch: 160%;
+  }
+
+  .t-h2 {
+    font-stretch: var(--h2-wdth, 150%);
+  }
+
+  .t-year {
+    font-weight: 22;
+    font-stretch: 170%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .t-hero {
+    font-weight: 40;
+    font-stretch: 180%;
+  }
+}
+
+@media (min-width: 1091px) {
+  .t-hero {
+    font-weight: 30;
+  }
+}
+
+/* ── layers (3.5) ──────────────────────────────────────────── */
+/* The fixed canvas host sits at --z-canvas; all content paints above it. */
+main,
+footer {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* ── layout helpers ────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--gutter);
+  width: 100%;
+  max-width: calc(var(--grid-max) + 2 * var(--margin));
+  margin-inline: auto;
+  padding-inline: var(--margin);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Skip link: first in page.tsx, visible on focus (4.12). */
+.skip-link {
+  position: fixed;
+  top: var(--sp-3);
+  left: var(--margin);
+  z-index: var(--z-skip);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--sp-5);
+  background: var(--c-sun);
+  color: var(--c-umber);
+  text-decoration: none;
+  transform: translateY(calc(-100% - var(--sp-5)));
+}
+
+.skip-link:focus-visible,
+.skip-link:focus {
+  transform: none;
+  outline-color: var(--c-umber);
+  outline-offset: -5px;
+}
+
+/* ── html[data-*] gating helpers (4.11, 7.2 rule 1) ───────────
+   Every variant is in the SSR HTML; these switch it by the attributes
+   the head script writes. No JS means no data-js: nothing is hidden. */
+html:not([data-js]) .js-only,
+html[data-js] .nojs-only {
+  display: none !important;
+}
+
+html[data-motion='reduced'] .motion-full-only,
+html:not([data-motion='reduced']) .motion-reduced-only {
+  display: none !important;
+}
+
+/* Live light vs Overcast. Without JS there is no data-webgl, so the
+   Overcast variant (posters, CSS light) is what shows. */
+html[data-webgl='pending'] .overcast-only,
+html[data-webgl='ready'] .overcast-only,
+html[data-webgl='off'] .webgl-only,
+html[data-webgl='failed'] .webgl-only,
+html:not([data-webgl]) .webgl-only {
+  display: none !important;
+}
+
+/* Pointer variants ("Move the loupe" / "Drag the loupe"). */
+@media (hover: hover) and (pointer: fine) {
+  .coarse-only {
+    display: none !important;
+  }
+}
+
+@media not all and (hover: hover) and (pointer: fine) {
+  .fine-only {
+    display: none !important;
+  }
+}
+
+/* Still routes (4.14): UI hidden with visibility, never display, so the
+   [data-scrim] rects keep their layout for check:contrast. `og` keeps
+   the elements marked data-og-keep (the wordmark and the H1). */
+html[data-still] header,
+html[data-still] main,
+html[data-still] footer {
+  visibility: hidden;
+}
+
+html[data-still='og'] [data-og-keep] {
+  visibility: visible;
+}
+
+/* ── loader and pre-intro gates with CSS failsafes (4.4) ──────
+   Markup is server-rendered; shown only by CSS once the head script has
+   run, so first paint never shows the ending before the beginning.
+   Hooks: [data-loader] on the loader root (WP6), [data-hero-title] on the
+   hero H1 (WP6). Selectors are scoped with :not(html), so an attribute on
+   <html> can never hide the page. After the shutters open WP6 hides the root
+   itself (html[data-loader='open'] also removes it), and sets
+   html[data-intro='run' | 'done'] as the intro plays. */
+[data-loader]:not(html) {
+  display: none;
+}
+
+html[data-js][data-motion='full']:not([data-still]):not([data-loader='open']) [data-loader]:not(html) {
+  display: block;
+  animation: aslant-open 0.45s var(--ease-shutter) 8s forwards;
+}
+
+html[data-js][data-motion='full']:not([data-still]):not([data-intro]) [data-hero-title] {
+  opacity: 0;
+  animation: aslant-reveal 0.4s var(--ease-focus) 8s forwards;
+}
+
+@keyframes aslant-reveal {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes aslant-open {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

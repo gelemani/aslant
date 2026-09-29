@@ -1,0 +1,24 @@
+.readout {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.label {
+  color: var(--c-dust);
+}
+
+.value {
+  display: inline-block;
+  color: var(--c-lime);
+  white-space: nowrap;
+}
+
+:global([data-surface='sunlit']) .label {
+  color: var(--c-umber-soft);
+}
+
+:global([data-surface='sunlit']) .value {
+  color: var(--c-umber);
+}

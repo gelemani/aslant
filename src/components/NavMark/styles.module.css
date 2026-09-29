@@ -1,0 +1,15 @@
+.mark {
+  display: inline-block;
+  flex: none;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+.mark polygon {
+  fill: var(--mark-color, #FFE3C4);
+  transition: fill var(--dur-state, 240ms) linear;
+}
+
+html[data-motion='reduced'] .mark polygon {
+  transition: none;
+}

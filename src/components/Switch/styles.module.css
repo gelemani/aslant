@@ -1,0 +1,104 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 44px;
+  padding: 0;
+  color: var(--c-lime);
+  text-align: left;
+  cursor: pointer;
+}
+
+.switch:disabled {
+  cursor: default;
+}
+
+.switch:disabled .track,
+.switch:disabled .bars {
+  opacity: 0.45;
+}
+
+.label {
+  color: inherit;
+}
+
+.track {
+  position: relative;
+  flex: none;
+  width: 28px;
+  height: 16px;
+  border: 1px solid var(--c-dust);
+  transition: border-color var(--dur-state) var(--ease-focus);
+}
+
+.thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  background: var(--c-dust);
+  transition:
+    transform var(--dur-state) var(--ease-focus),
+    background-color var(--dur-state) var(--ease-focus);
+}
+
+.switch[data-on] .thumb {
+  background: var(--c-sun);
+  transform: translateX(12px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .switch:hover:not(:disabled) .track {
+    border-color: var(--c-lime);
+  }
+}
+
+/* Seven 2 × 10 px bars: flat when off, band energies (--e, 0 to 1) when on. */
+.bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 10px;
+}
+
+.bar {
+  --e: 0;
+  width: 2px;
+  height: 10px;
+  background: var(--c-dust);
+  transform-origin: bottom;
+  transform: scaleY(0.2);
+}
+
+.switch[data-on] .bar {
+  background: var(--c-sun);
+  transform: scaleY(calc(0.2 + 0.8 * var(--e)));
+}
+
+.helper {
+  color: var(--c-dust);
+}
+
+:global(html[data-motion='reduced']) .thumb,
+:global(html[data-motion='reduced']) .track {
+  transition: none;
+}
+
+:global([data-surface='sunlit']) .switch {
+  color: var(--c-umber);
+}
+
+:global([data-surface='sunlit']) .track {
+  border-color: var(--c-umber-soft);
+}
+
+:global([data-surface='sunlit']) .switch[data-on] .thumb {
+  background: var(--c-umber);
+}

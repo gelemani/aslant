@@ -1,0 +1,142 @@
+/* first-light (5.1). Stacked composition first (phones, portrait tablets), split from
+   1024 px wide at aspect 0.9 and above (5.0). The anchor boxes are the 5.0 rest rects. */
+
+.section {
+  position: relative;
+  min-height: 100svh;
+}
+
+/* ── poster: Overcast, no JS, and the frames before the canvas draws (4.11) ── */
+.poster {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity var(--dur-state) var(--ease-light);
+}
+
+.posterImg {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+/* Once the canvas draws, the poster steps back with opacity only, so its alt stays in the tree. */
+:global(html[data-webgl='ready']) .poster {
+  opacity: 0;
+}
+
+/* ── the lockup ── */
+.inner {
+  position: relative;
+  min-height: 100svh;
+  align-content: end;
+  padding-top: 55svh;
+  padding-bottom: 32px;
+}
+
+.lockup {
+  grid-column: 1 / -1;
+}
+
+.title {
+  color: var(--c-lime);
+}
+
+.sub {
+  max-width: 34ch;
+  margin-top: var(--sp-5);
+  color: var(--c-dust);
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) 28px;
+  margin-top: var(--sp-6);
+}
+
+/* Pre-intro state of the sub and the CTAs (4.4, 4.8.4: opacity only). Lifted by the intro,
+   which then fades them in at 1100 ms and 1400 ms; the CSS failsafe matches the H1's.
+   0.01, not 0 (review PERF-4): the copy is laid out and painted under the shutters at first
+   paint, invisibly (1% of lime on shade is under one level), so Chrome records the H1 and
+   the sub as the LCP at first paint instead of when the intro fades them in. An opacity-0
+   element is not a paint for LCP. The H1 rule overrides the equal gate in globals.css. */
+:global(html[data-js][data-motion='full']:not([data-still]):not([data-intro])) .lockup .title {
+  opacity: 0.01;
+}
+
+:global(html[data-js][data-motion='full']:not([data-still]):not([data-intro])) .sub,
+:global(html[data-js][data-motion='full']:not([data-still]):not([data-intro])) .ctas {
+  opacity: 0.01;
+  animation: heroReveal 0.4s var(--ease-focus) 8s forwards;
+}
+
+@keyframes heroReveal {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── the light's rest box (5.0 stacked: phones) ── */
+.anchor {
+  position: absolute;
+  left: 5%;
+  top: 9svh;
+  width: 89%;
+  height: 39svh;
+  pointer-events: none;
+}
+
+/* Portrait tablets: the same composition, a touch larger (5.1). */
+@media (min-width: 768px) {
+  .anchor {
+    left: 6%;
+    top: 10svh;
+    width: 88%;
+    height: 40svh;
+  }
+}
+
+/* Portrait tablets (stacked, at least 768 px wide): the lockup starts at 55% (5.1, "from 55%
+   down") instead of dropping to the bottom of a tall screen, so it sits under the light rather
+   than a third of the viewport below it. Phones fill the space either way. */
+@media (min-width: 768px) and (max-width: 1023px), (min-width: 768px) and (max-aspect-ratio: 899/1000) {
+  .inner {
+    align-content: start;
+  }
+}
+
+/* ── split: lockup left, light right ── */
+@media (min-width: 1024px) and (min-aspect-ratio: 9/10) {
+  .inner {
+    padding-top: calc(var(--nav-h) + var(--sp-7));
+    padding-bottom: clamp(40px, 8svh, 88px);
+  }
+
+  .lockup {
+    grid-column: 1 / span 6;
+  }
+
+  /* Three lines as the measure falls: "Clear glass / that writes / in sunlight." */
+  .title {
+    max-width: 9em;
+  }
+
+  .ctas {
+    margin-top: var(--sp-6);
+  }
+
+  .anchor {
+    left: 45.5%;
+    top: 15.5svh;
+    width: 53%;
+    height: 64.5svh;
+  }
+}

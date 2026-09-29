@@ -1,0 +1,96 @@
+/* The dawn loader (4.4). Hidden by default; the global gate in globals.css shows
+   [data-loader] only under html[data-js][data-motion='full']:not([data-still]) and
+   removes it once html[data-loader='open'] is set.
+   Geometry, until measured from the hero anchor: the patch's centre and height (5.0). */
+
+.loader {
+  --slit-x: 49.5vw;
+  --slit-top: 9svh;
+  --slit-h: 39svh;
+  --slit-w: 2px;
+  --slit-glow: 0.2;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-loader);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .loader {
+    --slit-x: 50vw;
+    --slit-top: 10svh;
+    --slit-h: 40svh;
+  }
+}
+
+@media (min-width: 1024px) and (min-aspect-ratio: 9/10) {
+  .loader {
+    --slit-x: 72vw;
+    --slit-top: 15.5svh;
+    --slit-h: 64.5svh;
+  }
+}
+
+/* Two full-height predawn panels meeting at the slit's centre; each carries half the slit
+   as a notch in its inner edge, over the patch's height only. */
+.shutter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--c-predawn);
+  will-change: transform;
+}
+
+.left {
+  left: 0;
+  width: var(--slit-x);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% var(--slit-top),
+    calc(100% - var(--slit-w) / 2) var(--slit-top),
+    calc(100% - var(--slit-w) / 2) calc(var(--slit-top) + var(--slit-h)),
+    100% calc(var(--slit-top) + var(--slit-h)),
+    100% 100%,
+    0 100%
+  );
+}
+
+.right {
+  left: var(--slit-x);
+  right: 0;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 calc(var(--slit-top) + var(--slit-h)),
+    calc(var(--slit-w) / 2) calc(var(--slit-top) + var(--slit-h)),
+    calc(var(--slit-w) / 2) var(--slit-top),
+    0 var(--slit-top)
+  );
+}
+
+/* Before the canvas has drawn: a warm CSS slit of dawn light over predawn. */
+.slit {
+  position: absolute;
+  top: var(--slit-top);
+  left: calc(var(--slit-x) - var(--slit-w) / 2);
+  width: var(--slit-w);
+  height: var(--slit-h);
+  background: var(--c-predawn);
+  transition: opacity var(--dur-state) var(--ease-light);
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  opacity: var(--slit-glow);
+  background: linear-gradient(to bottom, rgb(255 210 168 / 0) 0%, #ffd2a8 9%, #ffd2a8 91%, rgb(255 210 168 / 0) 100%);
+}
+
+/* Once the canvas has drawn, the slit is the gap: the live pool light is seen through it. */
+:global(html[data-webgl='ready']) .slit {
+  opacity: 0;
+}

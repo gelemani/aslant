@@ -1,0 +1,52 @@
+/* Light sweep (brief 4.8.2).
+   Default (no JS, Still air, still routes, and every heading once swept): plain lime
+   text, the lit copy absent. Only with JS and full motion does the base wait in shade
+   and the lit copy take the slanted mask. */
+.sweep {
+  position: relative;
+}
+
+.base {
+  display: block;
+}
+
+.lit {
+  display: none;
+}
+
+:global(html[data-js][data-motion='full']) .sweep[data-sweep='idle'] .base,
+:global(html[data-js][data-motion='full']) .sweep[data-sweep='run'] .base {
+  color: #9A9890; /* lime in shade: 3.57:1 on --c-shade, large text */
+}
+
+:global(html[data-js][data-motion='full']) .sweep[data-sweep='idle'] .lit,
+:global(html[data-js][data-motion='full']) .sweep[data-sweep='run'] .lit {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: var(--c-lime);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-mask-image: linear-gradient(var(--sweep-angle, 104deg), #000 0 40%, transparent 60% 100%);
+  mask-image: linear-gradient(var(--sweep-angle, 104deg), #000 0 40%, transparent 60% 100%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+}
+
+/* Waiting in shade: the lit copy is present but fully outside its light. */
+:global(html[data-js][data-motion='full']) .sweep[data-sweep='idle'] .lit {
+  visibility: hidden;
+}
+
+:global(html[data-js][data-motion='full']) .sweep[data-sweep='run'] .lit {
+  -webkit-mask-position: 0% 0;
+  mask-position: 0% 0;
+  transition:
+    -webkit-mask-position var(--dur-sweep) var(--ease-focus),
+    mask-position var(--dur-sweep) var(--ease-focus);
+}

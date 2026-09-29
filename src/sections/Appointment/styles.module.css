@@ -1,0 +1,349 @@
+/* ─────────────────────────────────────────────────────────────
+   appointment · 16:12 to 17:08 (brief 5.4)
+   Stacked first (phones, portrait tablets): one screen, in reading order.
+   Split (≥ 1024 px and aspect ≥ 0.9): a full-width clock over a mirrored
+   split, the light left, the text in columns 8 to 12.
+   ───────────────────────────────────────────────────────────── */
+
+.section {
+  --h2-wdth: 150%;
+  --h2-wdth-sm: 115%;
+  position: relative;
+  height: 160svh;
+}
+
+.frame {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--nav-h) + var(--sp-2)) var(--margin) var(--sp-4);
+}
+
+/* ── the clock ─────────────────────────────────────────────── */
+.clockBand {
+  align-self: flex-start;
+}
+
+.clock {
+  margin: 0;
+  white-space: nowrap;
+  color: var(--c-lime);
+  /* Sprat has no tabular figures: fixed slots, measured in Chrome on the widest digit (3.2):
+     at wdth 150 wght 20 the 0 is 0.852 em; at wdth 185 wght 14 the 6 and 9 are 1.052 em. */
+  --slot: 0.852em;
+  --colon: 0.34em;
+}
+
+.slot,
+.colon {
+  display: inline-block;
+  text-align: center;
+}
+
+.slot {
+  width: var(--slot);
+}
+
+/* The hour's first digit is 1 from 16:12 to 17:08 and never changes: it keeps its own width,
+   so the clock stands on column 1 instead of floating in an empty half-slot. */
+.slot:first-child {
+  width: auto;
+}
+
+.colon {
+  width: var(--colon);
+}
+
+/* ── the light (the anchor box is the patch at rest) ─────────── */
+.anchor {
+  order: 0;
+  flex: 1 1 0;
+  min-height: 88px;
+  width: 88%;
+  align-self: center;
+  margin: var(--sp-3) 0;
+}
+
+.clockBand {
+  order: -1;
+}
+
+/* Overcast: the DOM word inside the CSS light (LightAnchor, translate="no") loosens with the true sun
+   error written by the controller as --appt-focus (1 at 16:40). It is light, not copy: aria-hidden. */
+.anchor {
+  --light-focus: var(--appt-focus, 1);
+}
+
+.anchor span[translate='no'] {
+  filter: blur(calc((1 - var(--appt-focus, 1)) * 7px));
+  opacity: calc(0.3 + 0.7 * var(--appt-focus, 1));
+}
+
+/* ── text ──────────────────────────────────────────────────── */
+.instrument {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--sp-1);
+}
+
+.text {
+  margin-top: var(--sp-4);
+}
+
+.title {
+  margin-bottom: var(--sp-3);
+}
+
+.sub {
+  color: var(--c-lime);
+  max-width: 40ch;
+}
+
+.lines {
+  margin-top: var(--sp-3);
+  display: grid;
+  row-gap: var(--sp-2);
+}
+
+.line {
+  color: var(--c-lime);
+  transition: opacity var(--dur-state) var(--ease-focus);
+}
+
+/* Scroll-mapped (5.4): hidden until the clock reaches their minute, and again in reverse.
+   Only with JS and full motion; no JS and Still air show both lines. Opacity only, so the
+   slot is fixed and screen readers always have both sentences. */
+html[data-js][data-motion='full'] .line:not([data-on]) {
+  opacity: 0;
+}
+
+.caption {
+  margin-top: var(--sp-3);
+  color: var(--c-dust);
+  max-width: 52ch;
+}
+
+/* ── sun-path arc ──────────────────────────────────────────── */
+.arc {
+  margin: 0;
+  width: 100%;
+  max-width: 360px;
+}
+
+.arcPlot {
+  position: relative;
+  width: 100%;
+  height: 48px;
+  overflow: clip;
+  overflow-clip-margin: 6px;
+}
+
+.arcSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.arcHorizon,
+.arcPath,
+.arcFocus {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.arcHorizon {
+  stroke: var(--c-line);
+  stroke-width: 1;
+}
+
+.arcPath {
+  stroke: var(--c-dust);
+  stroke-width: 1;
+}
+
+.arcFocus {
+  stroke: var(--c-sun);
+  stroke-width: 2;
+}
+
+/* A plot-sized layer translated by the dot's position in percent of the plot:
+   its top-left corner is the sun. */
+.arcDotTrack {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.arcDot {
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-sun);
+}
+
+.arcAxis {
+  position: relative;
+  height: 1.5em;
+  margin-top: var(--sp-1);
+  font-size: var(--t-caption);
+}
+
+.arcAxis > span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  color: var(--c-dust);
+  white-space: nowrap;
+}
+
+.arcLabel {
+  color: var(--c-dust);
+}
+
+.readout {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.readoutWord {
+  color: var(--c-dust);
+}
+
+.readoutNum {
+  color: var(--c-lime);
+}
+
+/* Stacked reading order (5.4): clock, patch, the caption right under the patch, H2 and sub,
+   the line slot, then the arc, its label and the readout. */
+.caption {
+  order: 1;
+}
+
+.text {
+  order: 2;
+}
+
+.instrument {
+  order: 3;
+  margin-top: var(--sp-5);
+}
+
+@media (max-width: 359px) {
+  .arc {
+    display: none;
+  }
+}
+
+/* ── tablets in portrait (stacked, larger type) ────────────── */
+@media (min-width: 768px) {
+  .clock {
+    --slot: 1.052em;
+  }
+
+  .arcPlot {
+    height: 72px;
+  }
+}
+
+/* ── split ─────────────────────────────────────────────────── */
+@media (min-width: 1024px) and (min-aspect-ratio: 9 / 10) {
+  .section:not([data-overflow]) .frame {
+    display: block;
+    padding: 0;
+    /* the 12-column grid inside the full-bleed frame (3.4) */
+    --inner: min(100%, calc(var(--grid-max) + 2 * var(--margin)));
+    --x0: calc((100% - var(--inner)) / 2 + var(--margin));
+    --col: calc((var(--inner) - 2 * var(--margin) - 11 * var(--gutter)) / 12);
+    --step: calc(var(--col) + var(--gutter));
+  }
+
+  .section:not([data-overflow]) .anchor {
+    position: absolute;
+    left: 10%;
+    top: 34%;
+    width: 42%;
+    height: 54%;
+    min-height: 0;
+    margin: 0;
+  }
+
+  .section:not([data-overflow]) .frame {
+    --clock-top: max(8%, calc(var(--nav-h) + var(--sp-1)));
+  }
+
+  .section:not([data-overflow]) .clockBand {
+    position: absolute;
+    left: var(--x0);
+    top: var(--clock-top);
+  }
+
+  /* The sun's path beside the clock it reads (columns 10 to 12), level with the tops of the digits,
+     clear of the nav. Columns 8 to 12 under the line slot (5.4) cannot hold it at 1280 x 800, and column 8
+     in the clock row meets the clock's last digit (5 to 7 px), so the block hangs from the right edge of
+     the grid, the edge the text column and the nav's button share: label and readout set flush right. */
+  .section:not([data-overflow]) .instrument {
+    position: absolute;
+    left: calc(var(--x0) + 9 * var(--step));
+    width: calc(3 * var(--col) + 2 * var(--gutter));
+    top: calc(var(--clock-top) + var(--sp-5));
+    margin: 0;
+    justify-items: end;
+    text-align: end;
+  }
+
+  .section:not([data-overflow]) .text {
+    position: absolute;
+    left: calc(var(--x0) + 7 * var(--step));
+    width: calc(5 * var(--col) + 4 * var(--gutter));
+    top: 34%;
+    margin: 0;
+  }
+
+  .section:not([data-overflow]) .caption {
+    position: absolute;
+    left: 10%;
+    top: 91%;
+    width: 42%;
+    margin: 0;
+  }
+
+  .arcPlot {
+    height: auto;
+    aspect-ratio: 360 / 110;
+  }
+}
+
+/* ── Still air: a static stack at 16:40 (4.11) ─────────────── */
+html[data-motion='reduced'] .section,
+.section[data-overflow] {
+  height: auto;
+}
+
+html[data-motion='reduced'] .frame,
+.section[data-overflow] .frame {
+  position: relative;
+  height: auto;
+  min-height: 100svh;
+}
+
+html[data-motion='reduced'] .anchor,
+.section[data-overflow] .anchor {
+  flex: 0 0 auto;
+  height: 32svh;
+}
+
+@media (min-width: 1024px) and (min-aspect-ratio: 9 / 10) {
+  html[data-motion='reduced'] .section:not([data-overflow]) .anchor {
+    height: 54%;
+  }
+}

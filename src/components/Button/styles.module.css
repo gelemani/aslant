@@ -1,0 +1,171 @@
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: var(--radius);
+  font: var(--t-ui) / 1.2 var(--f-text);
+  font-weight: 520;
+  font-stretch: normal;
+  font-variation-settings: 'SHRP' 100;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    background-color var(--dur-tick) var(--ease-focus),
+    border-color var(--dur-tick) var(--ease-focus),
+    box-shadow var(--dur-tick) var(--ease-focus),
+    color var(--dur-tick) var(--ease-focus),
+    text-decoration-color var(--dur-tick) var(--ease-focus);
+}
+
+.button[data-size='sm'] {
+  min-height: 40px;
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.button[data-busy] {
+  cursor: progress;
+}
+
+.label {
+  position: relative;
+}
+
+/* ── primary ── */
+.primary {
+  background: var(--c-sun);
+  color: var(--c-umber);
+}
+
+.primary[data-surface-tone='sunlit'] {
+  background: var(--c-umber);
+  color: var(--c-sunlit);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover:not(:disabled) {
+    background: var(--c-sun-hi);
+    box-shadow: inset 0 1px 0 #FFF7E6; /* light catching the edge */
+  }
+
+  .primary[data-surface-tone='sunlit']:hover:not(:disabled) {
+    background: #2A2F31;
+    box-shadow: none;
+  }
+}
+
+/* ── secondary ── */
+.secondary {
+  background: transparent;
+  color: var(--c-lime);
+  box-shadow: inset 0 0 0 1px var(--c-dust);
+}
+
+.secondary[data-surface-tone='sunlit'] {
+  color: var(--c-umber);
+  box-shadow: inset 0 0 0 1px var(--c-umber-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .secondary:hover:not(:disabled) {
+    box-shadow: inset 0 0 0 1px var(--c-sun);
+  }
+
+  .secondary[data-surface-tone='sunlit']:hover:not(:disabled) {
+    box-shadow: inset 0 0 0 1px var(--c-umber);
+  }
+}
+
+/* ── text ── */
+.text {
+  min-height: 44px;
+  padding: 0;
+  background: transparent;
+  color: var(--c-lime);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--c-dust);
+}
+
+.text[data-surface-tone='sunlit'] {
+  color: var(--c-umber);
+  text-decoration-color: var(--c-umber-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .text:hover:not(:disabled) {
+    text-decoration-color: var(--c-sun);
+  }
+
+  .text[data-surface-tone='sunlit']:hover:not(:disabled) {
+    text-decoration-color: var(--c-umber);
+  }
+}
+
+/* Focus ring (3.1.4): sun on shade, umber on sun-filled or sunlit surfaces. */
+.button:focus-visible {
+  outline: 2px solid var(--c-sun);
+  outline-offset: 3px;
+}
+
+.button[data-surface-tone='sunlit']:focus-visible {
+  outline-color: var(--c-umber);
+}
+
+/* ── busy: the page's only loop, a 1 px line of light along the bottom edge ── */
+.line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 36%;
+  background: linear-gradient(90deg, transparent, var(--c-umber) 40% 60%, transparent);
+  animation: travel 1.4s var(--ease-light) infinite;
+}
+
+.primary[data-surface-tone='sunlit'] .line::before {
+  background: linear-gradient(90deg, transparent, var(--c-sunlit) 40% 60%, transparent);
+}
+
+@keyframes travel {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(280%);
+  }
+}
+
+:global(html[data-motion='reduced']) .line::before {
+  width: 100%;
+  animation: none;
+  background: var(--c-umber);
+}

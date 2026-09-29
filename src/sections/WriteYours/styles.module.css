@@ -1,0 +1,432 @@
+/* write-yours (brief 5.5). Stacked by default (phones, portrait tablets); the mirrored split
+   (light left, controls in columns 8 to 12, result under the patch) from 1024 px at aspect ≥ 0.9. */
+
+.section {
+  --h2-wdth: 160%;
+  --h2-wdth-sm: 118%;
+  position: relative;
+  min-height: 100svh;
+}
+
+.inner {
+  position: static;
+  align-content: start;
+  padding-top: calc(var(--nav-h) + var(--sp-7));
+  padding-bottom: var(--sp-9);
+}
+
+.inner > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+/* ── heading ─────────────────────────────────────────────────── */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.title {
+  color: var(--c-lime);
+}
+
+.sub {
+  color: var(--c-dust);
+  max-width: 40ch;
+}
+
+/* ── the preview (stacked: in flow, DOM-locked light) ────────── */
+.anchor {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2.1 / 1;
+  margin-top: var(--sp-6);
+}
+
+/* ── result and relief lines ─────────────────────────────────── */
+.readouts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+.result {
+  color: var(--c-lime);
+  max-width: 52ch;
+  font-variant-numeric: tabular-nums;
+}
+
+.reliefSlot {
+  display: grid;
+  min-height: 1.4em;
+}
+
+.relief,
+.status {
+  grid-area: 1 / 1;
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  transition: opacity var(--dur-state) var(--ease-focus);
+}
+
+.relief {
+  color: var(--c-lime);
+}
+
+.status {
+  color: var(--c-dust);
+}
+
+.relief[data-show],
+.status[data-show] {
+  opacity: 1;
+}
+
+html:not([data-js]) .reliefSlot {
+  display: none;
+}
+
+/* ── controls ────────────────────────────────────────────────── */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  margin-top: var(--sp-7);
+  max-width: 560px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.label {
+  color: var(--c-lime);
+}
+
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+
+.hourValue {
+  min-width: 5ch;
+  color: var(--c-sun);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.helper {
+  color: var(--c-dust);
+}
+
+.error {
+  color: var(--c-rust-light);
+}
+
+.note {
+  color: var(--c-dust);
+  max-width: 44ch;
+}
+
+.overcast {
+  color: var(--c-dust);
+  max-width: 44ch;
+}
+
+/* The word field: a recess in the plaster with a dust underline (3.1, 3.5). */
+.input {
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--sp-4);
+  border: 0;
+  border-bottom: 1px solid var(--c-dust);
+  background: var(--c-recess);
+  color: var(--c-lime);
+  caret-color: var(--c-sun);
+}
+
+.input[aria-invalid='true'] {
+  border-bottom-color: var(--c-rust-light);
+}
+
+/* The hour: a 1 px line of dust, the thumb a small parallelogram of sun (the brand mark). */
+/* One hairline per hour under the track, 06:00 to 21:00 (an instrument scale, 2.2). The thumb's
+   centre runs from 9 px to width − 9 px, so the scale is inset by half the thumb. */
+.rangeWrap {
+  position: relative;
+}
+
+.rangeWrap::after {
+  content: '';
+  position: absolute;
+  left: 9px;
+  right: 8px;
+  top: calc(50% + 5px);
+  height: 5px;
+  background:
+    linear-gradient(90deg, transparent calc(100% - 1px), var(--c-line) 0),
+    repeating-linear-gradient(90deg, var(--c-line) 0 1px, transparent 1px calc(100% / 15));
+  pointer-events: none;
+}
+
+.range {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  touch-action: pan-y;
+}
+
+.range::-webkit-slider-runnable-track {
+  height: 1px;
+  background: var(--c-dust);
+  border: 0;
+}
+
+.range::-moz-range-track {
+  height: 1px;
+  background: var(--c-dust);
+  border: 0;
+}
+
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 26px;
+  margin-top: -12.5px;
+  border: 0;
+  border-radius: 0;
+  background: var(--c-sun);
+  clip-path: polygon(34% 0, 100% 0, 66% 100%, 0 100%);
+}
+
+.range::-moz-range-thumb {
+  width: 18px;
+  height: 26px;
+  border: 0;
+  border-radius: 0;
+  background: var(--c-sun);
+  clip-path: polygon(34% 0, 100% 0, 66% 100%, 0 100%);
+}
+
+/* Glass and Where share a row. */
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-5);
+}
+
+@media (min-width: 480px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--sp-4);
+  }
+}
+
+.glass {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.glass > legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 6px;
+}
+
+.segments {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  clear: both;
+}
+
+.segment {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 var(--sp-3);
+  background: var(--c-recess);
+  border-bottom: 1px solid var(--c-dust);
+  color: var(--c-dust);
+  cursor: pointer;
+  transition: color var(--dur-tick) var(--ease-focus), box-shadow var(--dur-state) var(--ease-focus);
+}
+
+.segment + .segment {
+  border-left: 1px solid var(--c-shade);
+}
+
+.segment[data-checked] {
+  color: var(--c-lime);
+  box-shadow: inset 0 -2px 0 var(--c-sun);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .segment:not([data-checked]):hover {
+    color: var(--c-lime);
+  }
+}
+
+.segment:has(.radio:focus-visible) {
+  outline: 2px solid var(--c-sun);
+  outline-offset: 3px;
+  z-index: 1;
+}
+
+.radio {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.select {
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--sp-6) 0 var(--sp-4);
+  border: 0;
+  border-bottom: 1px solid var(--c-dust);
+  background:
+    linear-gradient(45deg, transparent 50%, var(--c-dust) 50%) calc(100% - 20px) 50% / 6px 6px no-repeat,
+    linear-gradient(-45deg, transparent 50%, var(--c-dust) 50%) calc(100% - 14px) 50% / 6px 6px no-repeat,
+    var(--c-recess);
+  color: var(--c-lime);
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.select option {
+  background: var(--c-recess);
+  color: var(--c-lime);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.saveWrap {
+  display: contents;
+}
+
+/* ── contour map ─────────────────────────────────────────────── */
+.contour {
+  display: none;
+  align-items: flex-end;
+  gap: var(--sp-4);
+  margin: var(--sp-7) 0 0;
+}
+
+@media (min-width: 480px) {
+  .contour {
+    display: flex;
+  }
+}
+
+.contourCanvas {
+  flex: none;
+  width: 180px;
+  height: 90px;
+}
+
+.contourCaption {
+  color: var(--c-dust);
+  max-width: 22ch;
+  text-wrap: balance;
+}
+
+/* Stacked buttons on phones: full width (5.5). */
+@media (max-width: 767px) {
+  .buttons {
+    flex-direction: column;
+  }
+
+  .buttons > * {
+    width: 100%;
+  }
+}
+
+/* ── split: the light on the left, controls in columns 8 to 12 (5.0, 5.5) ── */
+@media (min-width: 1024px) and (min-aspect-ratio: 9 / 10) {
+  .inner {
+    min-height: 100svh;
+    align-content: center;
+    padding-top: calc(var(--nav-h) + var(--sp-4));
+    padding-bottom: var(--sp-6);
+  }
+
+  .head,
+  .controls {
+    grid-column: 8 / -1;
+  }
+
+  .head {
+    gap: var(--sp-4);
+  }
+
+  .controls {
+    gap: var(--sp-3);
+    margin-top: var(--sp-5);
+    max-width: none;
+  }
+
+  .input,
+  .select,
+  .segment {
+    height: 48px;
+    min-height: 48px;
+  }
+
+  .anchor {
+    position: absolute;
+    left: 4%;
+    top: 14svh;
+    width: 50%;
+    height: 54svh;
+    margin: 0;
+    aspect-ratio: auto;
+  }
+
+  /* Under the patch, columns 1 to 6, from 72% of the viewport. */
+  .readouts {
+    position: absolute;
+    left: var(--margin);
+    top: 72svh;
+    width: calc((100% - 2 * var(--margin) - 11 * var(--gutter)) / 12 * 6 + 5 * var(--gutter));
+    margin: 0;
+  }
+
+  /* Bottom left, x 5.5% to 18%, y 84% to 94%, caption beside it. */
+  .contour {
+    position: absolute;
+    left: 5.5%;
+    top: 84svh;
+    margin: 0;
+  }
+}

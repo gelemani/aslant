@@ -1,0 +1,196 @@
+/* The menu (4.5): a recess in the plaster, opened like the loader's shutters.
+   --x is the nav mark's x (px); --p the open fraction; --edge the sun edges' opacity. */
+
+.menu {
+  --x: 90vw;
+  --p: 0;
+  --edge: 1;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-menu);
+  display: grid;
+  grid-template-rows: var(--nav-h) 1fr auto;
+  padding-inline: var(--margin);
+  padding-bottom: max(var(--sp-6), env(safe-area-inset-bottom));
+  background: var(--c-recess);
+  color: var(--c-lime);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  clip-path: inset(0 calc((100% - var(--x)) * (1 - var(--p)) - 1px) 0 calc(var(--x) * (1 - var(--p)) - 1px));
+}
+
+.menu[hidden] {
+  display: none;
+}
+
+/* A 2 px line of sun riding each shutter edge while it moves. */
+.menu::before,
+.menu::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--c-sun);
+  opacity: var(--edge);
+  pointer-events: none;
+}
+
+.menu::before {
+  left: calc(var(--x) * (1 - var(--p)) - 1px);
+}
+
+.menu::after {
+  left: calc(var(--x) + (100vw - var(--x)) * var(--p) - 1px);
+}
+
+/* ── bar: "Close" where the menu button was ── */
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-bottom: 0.08em;
+  color: var(--c-lime);
+  text-decoration: none;
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 var(--sp-2);
+  margin-right: calc(var(--sp-2) * -1);
+  color: var(--c-lime);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--c-dust);
+  transition: text-decoration-color var(--dur-tick) var(--ease-focus);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .close:hover {
+    text-decoration-color: var(--c-sun);
+  }
+}
+
+/* ── the hours ── */
+.items {
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding-top: var(--sp-5);
+  padding-bottom: var(--sp-7);
+}
+
+.item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-5);
+  min-height: 44px;
+  padding-block: 2px;
+  color: var(--c-lime);
+  text-decoration: none;
+}
+
+.hour {
+  display: inline-block;
+  /* Sprat has no tabular figures: a fixed slot as wide as the widest hour ("20:40") keeps the names in one column. */
+  min-width: 4em;
+  color: var(--c-lime);
+  transition: color var(--dur-tick) var(--ease-focus);
+}
+
+.name {
+  color: var(--c-dust);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: transparent;
+  transition:
+    color var(--dur-tick) var(--ease-focus),
+    text-decoration-color var(--dur-tick) var(--ease-focus);
+}
+
+/* The hour you are in now is lit. */
+.item[aria-current='step'] .hour {
+  color: var(--c-sun);
+}
+
+.item[aria-current='step'] .name {
+  color: var(--c-lime);
+}
+
+.item:focus-visible {
+  outline-offset: 4px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .item:hover .name {
+    color: var(--c-lime);
+    text-decoration-color: var(--c-sun);
+  }
+}
+
+/* ── foot: the modes, and the one action ── */
+.foot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-6);
+}
+
+.modes {
+  width: 100%;
+}
+
+.cta {
+  align-self: stretch;
+}
+
+@media (min-width: 480px) {
+  .cta {
+    align-self: flex-start;
+  }
+}
+
+@media (min-width: 768px) {
+  .items {
+    align-self: center;
+    padding-block: var(--sp-5);
+  }
+
+  .item {
+    gap: var(--sp-6);
+  }
+
+  .foot {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--sp-7);
+  }
+
+  .modes {
+    width: auto;
+    flex: 1 1 auto;
+    max-width: 40rem;
+  }
+}
+
+:global(html[data-motion='reduced']) .menu {
+  clip-path: none;
+}
+
+:global(html[data-motion='reduced']) .menu::before,
+:global(html[data-motion='reduced']) .menu::after {
+  display: none;
+}

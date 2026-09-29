@@ -1,0 +1,228 @@
+/* clear-glass (10:30) · brief 5.2. Split: text in columns 1 to 4, vertically centred, the
+   glass at left 44% top 9% width 52% height 83%. Stacked: glass at 5 / 8 / 90 / 42, text
+   from 54% down. Live mode = JS, full motion and a canvas that has not failed; everything
+   else (no JS, Overcast, Still air) shows the relief poster, the caption and no toggle. */
+
+.section {
+  --h2-wdth: 150%;
+  --h2-wdth-sm: 115%;
+  position: relative;
+  min-height: 100svh;
+}
+
+/* ── the glass (anchor and the layer that holds the poster and the touch disc) ── */
+.glass {
+  position: absolute;
+  left: 5%;
+  top: 8svh;
+  width: 90%;
+  height: 42svh;
+}
+
+.poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── live and static variants ── */
+:global(html[data-js][data-motion='full']:not([data-webgl='off']):not([data-webgl='failed'])) .staticOnly,
+:global(html[data-js][data-motion='full']:not([data-webgl='off']):not([data-webgl='failed'])) .poster {
+  display: none;
+}
+
+:global(html:not([data-js])) .liveOnly,
+:global(html[data-motion='reduced']) .liveOnly,
+:global(html[data-webgl='off']) .liveOnly,
+:global(html[data-webgl='failed']) .liveOnly {
+  display: none;
+}
+
+/* ── text column ── */
+.inner {
+  position: relative;
+  padding-top: calc(54svh + var(--sp-2));
+  padding-bottom: var(--sp-8);
+}
+
+.column {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+}
+
+.body {
+  margin-top: var(--sp-5);
+  color: var(--c-lime);
+}
+
+.hint {
+  color: var(--c-dust);
+}
+
+.hintSplit {
+  display: none;
+  margin-top: var(--sp-6);
+}
+
+.hintStacked {
+  margin-top: var(--sp-4);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: var(--sp-6);
+}
+
+/* The toggle: primary control on touch (full-width, 48 px), a text button on split. */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--sp-5);
+  border: 1px solid var(--c-dust);
+  color: var(--c-lime);
+  transition:
+    border-color var(--dur-tick) var(--ease-focus),
+    color var(--dur-tick) var(--ease-focus);
+}
+
+.toggle[aria-pressed='true'] {
+  border-color: var(--c-sun);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .toggle:hover {
+    border-color: var(--c-sun);
+  }
+}
+
+.toggle:active {
+  transform: translateY(1px);
+}
+
+.caption {
+  margin-top: var(--sp-4);
+  min-height: 3em;
+  max-width: 34ch;
+  color: var(--c-dust);
+  opacity: 0;
+  transition: opacity var(--dur-fade) var(--ease-focus);
+}
+
+.caption[data-shown] {
+  opacity: 1;
+}
+
+.staticOnly.caption {
+  min-height: 0;
+}
+
+.readouts {
+  display: flex;
+  gap: var(--sp-7);
+  margin-top: var(--sp-5);
+}
+
+.footnote {
+  margin-top: var(--sp-7);
+  max-width: 44ch;
+  color: var(--c-dust);
+}
+
+/* ── touch proxy disc: the loupe's handle on coarse pointers ── */
+.disc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 160px;
+  height: 160px;
+  margin: -80px 0 0 -80px;
+  border-radius: 50%; /* lenses are round (3.5) */
+  border: 1px solid rgb(255 225 166 / 0.28);
+  touch-action: none;
+  cursor: grab;
+  z-index: var(--z-overlay);
+}
+
+.disc[data-dragging] {
+  cursor: grabbing;
+  border-color: rgb(255 225 166 / 0.5);
+}
+
+/* ── split composition: w ≥ 1024 and aspect ≥ 0.9 ── */
+@media (min-width: 1024px) and (min-aspect-ratio: 9 / 10) {
+  .glass {
+    left: 44%;
+    top: 9svh;
+    width: 52%;
+    height: 83svh;
+  }
+
+  .inner {
+    min-height: 100svh;
+    padding-top: calc(var(--nav-h) + var(--sp-7));
+    padding-bottom: var(--sp-7);
+  }
+
+  .column {
+    grid-column: 1 / span 4;
+    min-height: calc(100svh - var(--nav-h) - 2 * var(--sp-7));
+  }
+
+  /* vertically centred between the top and the pinned footnote */
+  .block {
+    margin-block: auto;
+  }
+
+  .footnote {
+    margin-top: var(--sp-7);
+  }
+
+  .hintSplit {
+    display: block;
+  }
+
+  .hintStacked {
+    display: none;
+  }
+
+  .controls {
+    align-items: flex-start;
+    margin-top: var(--sp-4);
+  }
+
+  .toggle {
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    text-decoration-color: var(--c-dust);
+  }
+
+  .toggle[aria-pressed='true'] {
+    text-decoration-color: var(--c-sun);
+  }
+
+  .readouts {
+    margin-top: var(--sp-5);
+  }
+}
+
+@media (min-width: 1024px) and (min-aspect-ratio: 9 / 10) and (hover: hover) and (pointer: fine) {
+  .toggle:hover {
+    text-decoration-color: var(--c-sun);
+  }
+}

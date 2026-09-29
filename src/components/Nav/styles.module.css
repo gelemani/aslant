@@ -1,0 +1,169 @@
+/* The bar (4.5). Fixed, transparent over the canvas; the conductor keeps the sun out of
+   its rect (data-scrim), so its text always sits on shade. */
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-nav);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  height: var(--nav-h);
+  padding-inline: var(--margin);
+}
+
+/* The caused shade (review AD-01, A11Y-4, HN-1). Past the hero, copy scrolls under the bar.
+   The compositor already keeps the sun out of the bar's rect and a 32 px feather below it
+   (the scrim), so the wall there is in shade; this band is that same shade laid over the
+   DOM text passing beneath, so the wordmark and the hour never print on top of a heading
+   or a field. It adds no ground of its own: it matches the unlit wall and dissolves into
+   it just past the scrim's feather. Hidden in the hero so the first frame is unchanged. */
+.nav::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -1;
+  /* Solid to 6 px below the bar (past the wordmark's descender on every width), then a 42 px
+     eased fade, so copy scrolling up is already gone before it reaches the wordmark or the hour. */
+  height: calc(var(--nav-h) + 48px);
+  background: linear-gradient(
+    to bottom,
+    var(--band, var(--c-shade)) 0,
+    var(--band, var(--c-shade)) calc(var(--nav-h) + 6px),
+    color-mix(in srgb, var(--band, var(--c-shade)) 88%, transparent) calc(var(--nav-h) + 14px),
+    color-mix(in srgb, var(--band, var(--c-shade)) 62%, transparent) calc(var(--nav-h) + 24px),
+    color-mix(in srgb, var(--band, var(--c-shade)) 32%, transparent) calc(var(--nav-h) + 34px),
+    color-mix(in srgb, var(--band, var(--c-shade)) 10%, transparent) calc(var(--nav-h) + 42px),
+    transparent 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-state) var(--ease-defocus);
+}
+
+/* In the hero the band is scroll-mapped (--band-first, written per frame by the nav): 0 at the
+   first frame, full before the H1 reaches the bar. */
+.nav[data-first]::before {
+  opacity: var(--band-first, 0);
+  transition: none;
+}
+
+.nav:not([data-first])::before {
+  opacity: 1;
+  transition-timing-function: var(--ease-focus);
+}
+
+/* At dusk the wall is darker; the band follows it. */
+.nav[data-nav-chapter='dusk'] {
+  --band: var(--c-dusk);
+}
+
+/* No JS: the chapter never changes, so the page's own scroll brings the band in past the hero. */
+:global(html:not([data-js])) .nav[data-first]::before {
+  animation: navBand linear both;
+  animation-timeline: scroll(root);
+  animation-range: 60svh 100svh;
+}
+
+@keyframes navBand {
+  to {
+    opacity: 1;
+  }
+}
+
+:global(html[data-motion='reduced']) .nav::before {
+  transition: none;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--c-lime);
+  text-decoration: none;
+  /* Sprat's ink sits high in its em box; the optical baseline matches the button labels. */
+  padding-bottom: 0.08em;
+}
+
+.end {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+}
+
+/* ── menu button: the live mark, the hour, the chapter ── */
+.menuButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 var(--sp-2);
+  margin-right: calc(var(--sp-2) * -1);
+  color: var(--c-lime);
+}
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  width: 28px;
+  height: 16px;
+}
+
+.hour {
+  display: inline-block;
+  min-width: 5ch;
+  color: var(--c-lime);
+}
+
+.name {
+  display: none;
+  color: var(--c-dust);
+  transition: color var(--dur-tick) var(--ease-focus);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .menuButton:hover .name {
+    color: var(--c-lime);
+  }
+}
+
+/* ── the nav CTA: hidden during first-light (with JS; always visible without) ── */
+.cta {
+  display: none;
+  transition:
+    opacity var(--dur-state) var(--ease-focus),
+    visibility 0s linear 0s,
+    background-color var(--dur-tick) var(--ease-focus),
+    box-shadow var(--dur-tick) var(--ease-focus);
+}
+
+:global(html[data-js]) .nav[data-first] .cta {
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity var(--dur-state) var(--ease-defocus),
+    visibility 0s linear var(--dur-state);
+}
+
+:global(html[data-motion='reduced']) .cta {
+  transition: none;
+}
+
+@media (min-width: 768px) {
+  .menuButton {
+    gap: var(--sp-3);
+    margin-right: 0;
+  }
+
+  .name {
+    display: inline;
+  }
+
+  .cta {
+    display: inline-flex;
+  }
+}

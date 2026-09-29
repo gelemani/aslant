@@ -1,0 +1,120 @@
+/* The colophon: a recess in the plaster at the right of the room. Nothing slides: the panel
+   comes into focus (opacity), and leaves faster than it arrived (4.8, 3.6). */
+.dialog {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(40rem, 100%);
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--c-recess);
+  color: var(--c-lime);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-line) transparent;
+  opacity: 0;
+  transition:
+    opacity var(--dur-close) var(--ease-defocus),
+    overlay var(--dur-close) allow-discrete,
+    display var(--dur-close) allow-discrete;
+}
+
+.dialog[open] {
+  opacity: 1;
+  transition:
+    opacity var(--dur-state) var(--ease-focus),
+    overlay var(--dur-state) allow-discrete,
+    display var(--dur-state) allow-discrete;
+}
+
+@starting-style {
+  .dialog[open] {
+    opacity: 0;
+  }
+}
+
+.dialog::backdrop {
+  background: rgb(22 24 26 / 0);
+  transition:
+    background-color var(--dur-close) var(--ease-defocus),
+    overlay var(--dur-close) allow-discrete,
+    display var(--dur-close) allow-discrete;
+}
+
+.dialog[open]::backdrop {
+  background: rgb(22 24 26 / 0.62);
+}
+
+@starting-style {
+  .dialog[open]::backdrop {
+    background: rgb(22 24 26 / 0);
+  }
+}
+
+.panel {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-7);
+  padding: calc(var(--nav-h) + var(--sp-5)) var(--margin) var(--sp-8);
+}
+
+.title {
+  color: var(--c-lime);
+}
+
+.title:focus {
+  outline: none;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  max-width: 54ch;
+  color: var(--c-lime);
+}
+
+.meta {
+  color: var(--c-dust);
+}
+
+.live[hidden] {
+  display: none;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.keys {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  max-width: 54ch;
+}
+
+.hint {
+  color: var(--c-dust);
+}
+
+.actions {
+  margin-top: auto;
+  display: flex;
+  gap: var(--sp-4);
+}
+
+@media (min-width: 768px) {
+  .panel {
+    padding-inline: var(--sp-9) var(--sp-8);
+  }
+}
+
+:global(html[data-motion='reduced']) .dialog,
+:global(html[data-motion='reduced']) .dialog::backdrop {
+  transition: none;
+}

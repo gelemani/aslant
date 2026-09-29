@@ -1,0 +1,344 @@
+/* the-bend (12:50) · brief 5.3. A 150svh section with a 100svh sticky frame: a full-width
+   text band on top, the bench band below (split: top 44%, height 54%; stacked: the bench
+   rotated, top 6%, height 50%, text from 58%). Live mode = JS, full motion and a canvas that
+   has not failed. Everything else (no JS, Overcast, Still air, text that overflows at zoom)
+   is the static stack: the beats as a list above the bench poster. */
+
+.section {
+  --h2-wdth: 110%;
+  --h2-wdth-sm: 103%;
+  position: relative;
+  height: 150svh;
+}
+
+.frame {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+}
+
+/* ── text band ── */
+.band {
+  position: relative;
+  z-index: 1;
+  padding-top: 58svh;
+  row-gap: 0;
+}
+
+.titleBox,
+.beatBox,
+.readBox {
+  grid-column: 1 / -1;
+}
+
+.title {
+  margin-bottom: var(--sp-5);
+}
+
+.beats {
+  display: grid;
+}
+
+.beat {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  max-width: 64ch;
+  opacity: 0;
+  transition: opacity var(--dur-state) var(--ease-focus);
+}
+
+.frame[data-beat='1'] .beat[data-beat-item='1'],
+.frame[data-beat='2'] .beat[data-beat-item='2'],
+.frame[data-beat='3'] .beat[data-beat-item='3'] {
+  opacity: 1;
+}
+
+.small {
+  color: var(--c-dust);
+}
+
+.readBox {
+  margin-top: var(--sp-4);
+}
+
+.liveReadouts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  column-gap: var(--sp-6);
+  row-gap: var(--sp-2);
+}
+
+.readouts {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--sp-6);
+  row-gap: var(--sp-4);
+}
+
+.hint {
+  color: var(--c-dust);
+  opacity: 0;
+  transition: opacity var(--dur-state) var(--ease-focus);
+}
+
+.frame[data-beat='2'] .hint {
+  opacity: 1;
+}
+
+/* ── bench band ── */
+.stage {
+  position: absolute;
+  left: 0;
+  top: 6%;
+  width: 100%;
+  height: 50%;
+}
+
+.anchor,
+.figure {
+  position: absolute;
+  inset: 0;
+}
+
+.figure {
+  margin: 0;
+  z-index: 1;
+}
+
+.figure:focus-visible {
+  outline-offset: -3px;
+}
+
+.poster {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1440 / 486;
+  object-fit: cover;
+}
+
+.scaleNote,
+.wallCaption {
+  position: absolute;
+  z-index: 2;
+  color: var(--c-dust);
+  transition: opacity var(--dur-state) var(--ease-focus);
+}
+
+/* live only (BenchFigure writes data-labels): the labels leave with the diagram (not in the
+   overflow stack, where they sit in flow as ordinary captions) */
+.section:not([data-overflow]) .frame[data-labels='off'] .scaleNote,
+.section:not([data-overflow]) .frame[data-labels='off'] .wallCaption {
+  opacity: 0;
+}
+
+/* stacked phones: right-aligned under the wall line (band 90%, trace LAYOUT_STACKED). Under the
+   pane (brief 5.3: y 30%) it would cross the rays, which fill the pane's whole width at 390 px.
+   (The wall caption returns from 480 px.) */
+.scaleNote {
+  right: 8%;
+  top: calc(90% + 8px);
+  max-width: 34ch;
+  text-align: right;
+}
+
+/* stacked tablets: beside the pane, in the margin the narrower pane leaves */
+@media (min-width: 480px) {
+  .scaleNote {
+    right: 3%;
+    top: 40%;
+    max-width: 20ch;
+  }
+}
+
+/* stacked: right-aligned just under the wall line (band 90%), hidden on the smallest phones */
+.wallCaption {
+  right: 8%;
+  left: 8%;
+  top: calc(90% + 8px);
+  text-align: right;
+  display: none;
+}
+
+@media (min-width: 480px) {
+  .wallCaption {
+    display: block;
+  }
+}
+
+/* ── split composition: w ≥ 1024 and aspect ≥ 0.9 ── */
+@media (min-width: 1024px) and (min-aspect-ratio: 9 / 10) {
+  .band {
+    padding-top: 11svh;
+  }
+
+  .beatBox {
+    grid-column: 1 / span 7;
+  }
+
+  .readBox {
+    grid-column: 9 / span 4;
+    margin-top: 0;
+    align-self: start;
+  }
+
+  .liveReadouts {
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: var(--sp-4);
+  }
+
+  .stage {
+    top: 44%;
+    height: 54%;
+  }
+
+  /* under the pane, x 32 to 46%, y 92% of the viewport */
+  .scaleNote {
+    left: 32%;
+    right: auto;
+    top: calc((92 - 44) / 54 * 100%);
+    max-width: none;
+    white-space: nowrap; /* one line (about 250 px at --t-caption), not "... deeper / than it is." */
+    text-align: left;
+  }
+
+  /* right-aligned under the wall, x 70 to 96%, y 93% */
+  .wallCaption {
+    display: block;
+    left: 70%;
+    right: 4%;
+    top: calc((93 - 44) / 54 * 100%);
+    max-width: none;
+    text-wrap: balance; /* the sentence is wider than x 70 to 96%: two even lines, no orphan */
+  }
+}
+
+/* ── live and static variants ── */
+:global(html:not([data-js])) .liveOnly,
+:global(html[data-motion='reduced']) .liveOnly,
+:global(html[data-webgl='off']) .liveOnly,
+:global(html[data-webgl='failed']) .liveOnly,
+.section[data-overflow] .liveOnly {
+  display: none;
+}
+
+:global(html[data-js][data-motion='full']:not([data-webgl='off']):not([data-webgl='failed'])) .section:not([data-overflow]) .staticOnly,
+:global(html[data-js][data-motion='full']:not([data-webgl='off']):not([data-webgl='failed'])) .poster {
+  display: none;
+}
+
+/* The static stack. Section height auto, the frame static, every beat in order. */
+:global(html:not([data-js])) .section,
+:global(html[data-motion='reduced']) .section,
+:global(html[data-webgl='off']) .section,
+:global(html[data-webgl='failed']) .section,
+.section[data-overflow] {
+  height: auto;
+  padding-bottom: var(--sp-9);
+}
+
+:global(html:not([data-js])) .frame,
+:global(html[data-motion='reduced']) .frame,
+:global(html[data-webgl='off']) .frame,
+:global(html[data-webgl='failed']) .frame,
+.section[data-overflow] .frame {
+  position: static;
+  height: auto;
+}
+
+:global(html:not([data-js])) .band,
+:global(html[data-motion='reduced']) .band,
+:global(html[data-webgl='off']) .band,
+:global(html[data-webgl='failed']) .band,
+.section[data-overflow] .band {
+  padding-top: calc(var(--nav-h) + var(--sp-8));
+}
+
+:global(html:not([data-js])) .beats,
+:global(html[data-motion='reduced']) .beats,
+:global(html[data-webgl='off']) .beats,
+:global(html[data-webgl='failed']) .beats,
+.section[data-overflow] .beats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+:global(html:not([data-js])) .beat,
+:global(html[data-motion='reduced']) .beat,
+:global(html[data-webgl='off']) .beat,
+:global(html[data-webgl='failed']) .beat,
+.section[data-overflow] .beat {
+  grid-area: auto;
+  opacity: 1;
+  transition: none;
+}
+
+:global(html:not([data-js])) .readBox,
+:global(html[data-motion='reduced']) .readBox,
+:global(html[data-webgl='off']) .readBox,
+:global(html[data-webgl='failed']) .readBox,
+.section[data-overflow] .readBox {
+  grid-column: 1 / -1;
+  margin-top: var(--sp-6);
+}
+
+:global(html:not([data-js])) .stage,
+:global(html[data-motion='reduced']) .stage,
+:global(html[data-webgl='off']) .stage,
+:global(html[data-webgl='failed']) .stage,
+.section[data-overflow] .stage {
+  position: relative;
+  top: auto;
+  height: auto;
+  margin-top: var(--sp-7);
+  padding-inline: var(--margin);
+}
+
+:global(html:not([data-js])) .scaleNote,
+:global(html:not([data-js])) .wallCaption,
+:global(html[data-motion='reduced']) .scaleNote,
+:global(html[data-motion='reduced']) .wallCaption,
+:global(html[data-webgl='off']) .scaleNote,
+:global(html[data-webgl='off']) .wallCaption,
+:global(html[data-webgl='failed']) .scaleNote,
+:global(html[data-webgl='failed']) .wallCaption,
+.section[data-overflow] .scaleNote,
+.section[data-overflow] .wallCaption {
+  position: static;
+  display: block;
+  max-width: 64ch;
+  margin-top: var(--sp-3);
+  text-align: left;
+}
+
+/* With live light but overflowing text, the bench keeps a band of its own under the list. */
+:global(html[data-js][data-motion='full']:not([data-webgl='off']):not([data-webgl='failed'])) .section[data-overflow] .anchor {
+  position: relative;
+  inset: auto;
+  display: block;
+  width: 100%;
+  aspect-ratio: 390 / 422; /* the bench stands on end in the stacked composition */
+}
+
+@media (min-width: 1024px) and (min-aspect-ratio: 9 / 10) {
+  :global(html[data-js][data-motion='full']:not([data-webgl='off']):not([data-webgl='failed'])) .section[data-overflow] .anchor {
+    aspect-ratio: 1440 / 486;
+  }
+}
+
+/* The four static readouts: two by two on phones, one row from 768 px. */
+.readouts.staticOnly {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+}
+
+@media (min-width: 768px) {
+  .readouts.staticOnly {
+    grid-template-columns: repeat(4, max-content);
+  }
+}

@@ -1,0 +1,166 @@
+/* 18:20 · ledger (brief 5.6). Text grid over a full-width band of low light. */
+.section {
+  --h2-wdth: 180%;
+  --h2-wdth-sm: 124%;
+  position: relative;
+  overflow-x: clip; /* the band is 8vw wider than the viewport (3.4) */
+}
+
+.inner {
+  padding-top: calc(var(--nav-h) + var(--sp-7));
+  align-items: start;
+}
+
+.title {
+  grid-column: 1 / -1;
+  margin-bottom: var(--sp-7);
+}
+
+/* ── precedent (ol) ─────────────────────────────────────────── */
+.list {
+  grid-column: 1 / -1;
+  border-bottom: var(--hairline) solid var(--c-line);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--sp-3);
+  padding: 20px 0;
+  border-top: var(--hairline) solid var(--c-line);
+}
+
+.when {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.year {
+  display: block;
+  color: var(--c-lime);
+}
+
+.place {
+  display: block;
+  color: var(--c-dust);
+}
+
+.text {
+  max-width: 64ch;
+  color: var(--c-lime);
+}
+
+.text cite {
+  color: var(--c-lime);
+}
+
+/* ── how a pane is made ─────────────────────────────────────── */
+.spec {
+  grid-column: 1 / -1;
+  margin-top: var(--sp-8);
+}
+
+.spec h3 {
+  color: var(--c-lime);
+  margin-bottom: var(--sp-4);
+}
+
+.intro {
+  color: var(--c-lime);
+  margin-bottom: var(--sp-5);
+}
+
+.dl {
+  border-bottom: var(--hairline) solid var(--c-line);
+}
+
+.item {
+  display: grid;
+  gap: var(--sp-1);
+  padding: var(--sp-4) 0;
+  border-top: var(--hairline) solid var(--c-line);
+}
+
+.term {
+  color: var(--c-dust);
+}
+
+.value {
+  color: var(--c-lime);
+}
+
+/* ── the band: last child, in flow, full-bleed ──────────────── */
+.anchor {
+  grid-column: 1 / -1;
+  height: 18svh;
+  margin-top: var(--sp-8);
+  margin-bottom: 3svh;
+  margin-inline: calc(-1 * var(--margin) - 4vw);
+}
+
+/* md: year block beside the text, the spec under the list. */
+@media (min-width: 768px) {
+  .list {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+  }
+
+  .row {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    column-gap: var(--gutter);
+  }
+
+  .when {
+    grid-column: 1 / span 3;
+  }
+
+  .text {
+    grid-column: 4 / -1;
+    padding-top: 0.35em; /* the text's cap height sits on the year's */
+  }
+
+  .spec {
+    grid-column: 1 / span 6;
+  }
+}
+
+/* split: H2 in 1 to 7, rows in 1 to 8, spec in 9 to 12 top-aligned with the first row. */
+@media (min-width: 1024px) and (min-aspect-ratio: 9 / 10) {
+  .title {
+    grid-column: 1 / span 7;
+    grid-row: 1;
+  }
+
+  .list {
+    grid-column: 1 / span 8;
+    grid-row: 2;
+  }
+
+  .row {
+    grid-column: 1 / -1;
+  }
+
+  .when {
+    grid-column: 1 / span 3;
+  }
+
+  .text {
+    grid-column: 4 / -1;
+  }
+
+  .spec {
+    grid-column: 9 / -1;
+    grid-row: 2;
+    margin-top: 0;
+    border-top: var(--hairline) solid var(--c-line);
+    padding-top: 20px;
+  }
+
+  .anchor {
+    grid-row: 3;
+    height: 20svh;
+  }
+}

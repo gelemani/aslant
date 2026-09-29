@@ -1,0 +1,476 @@
+/* 19:10 · commission (brief 5.7). The form stands in the last sun.
+   The sunlit surface is the panel's ::before (skewed like every patch, lower edge to the right);
+   the penumbra ::after shows only where the DOM owns the registration (Overcast, no JS, native
+   scroll). With live light on a fine pointer, ::before thins to 10% while the patch is locked,
+   so the form sits on the canvas's own textured lit plaster. */
+.section {
+  --h2-wdth: 190%;
+  --h2-wdth-sm: 127%;
+  --panel-skew: 3deg;
+  position: relative;
+  overflow-x: clip; /* the skewed surface never scrolls sideways */
+}
+
+.inner {
+  padding-top: calc(var(--nav-h) + var(--sp-7));
+  /* The dusk rest shows the last 30svh of this section (the footer is 70svh): the sunlit panel must be
+     off-screen by then, or it reads as sun with no source above the blue-hour wall. */
+  padding-bottom: calc(30svh + var(--sp-6));
+  row-gap: var(--sp-7);
+}
+
+/* ── heading block ──────────────────────────────────────────── */
+.head {
+  grid-column: 1 / -1;
+  align-self: start;
+}
+
+.h2 {
+  color: var(--c-lime);
+  margin-bottom: var(--sp-5);
+}
+
+:global(html[data-js][data-motion='full']) .h2[data-fade='wait'] {
+  opacity: 0;
+}
+
+:global(html[data-js][data-motion='full']) .h2[data-fade='in'] {
+  opacity: 1;
+  transition: opacity var(--dur-fade) var(--ease-focus);
+}
+
+.sub {
+  max-width: 34ch;
+  color: var(--c-lime);
+}
+
+.note {
+  max-width: 40ch;
+  margin-top: var(--sp-4);
+  color: var(--c-dust);
+}
+
+.status {
+  max-width: 30ch;
+  color: var(--c-lime);
+}
+
+.status[data-filled] {
+  margin-top: var(--sp-6);
+  padding-top: var(--sp-4);
+  border-top: var(--hairline) solid var(--c-line);
+  animation: status-in var(--dur-state) var(--ease-focus) both;
+}
+
+.status:focus {
+  outline: none;
+}
+
+.status:focus-visible {
+  outline: 2px solid var(--c-sun);
+  outline-offset: 6px;
+}
+
+@keyframes status-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.saveRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+}
+
+.saveError {
+  color: var(--c-rust-light);
+}
+
+/* ── the panel: wall in the last sun ────────────────────────── */
+.panel {
+  position: relative;
+  grid-column: 1 / -1;
+  isolation: isolate;
+  --pad-y: var(--sp-6);
+  margin-inline: var(--sp-2); /* keeps the 3° slant of a tall phone panel on screen */
+  padding: var(--pad-y) var(--sp-5);
+  color: var(--c-umber);
+  color-scheme: light; /* native pickers and the time field read on a light surface */
+}
+
+.panel::before,
+.panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--c-sunlit);
+  transform: skewX(var(--panel-skew));
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+
+.panel::before {
+  z-index: -1;
+  transition: opacity var(--dur-state) var(--ease-focus);
+}
+
+/* Penumbra where the DOM owns the registration (5.7): off by default (live light draws its own). */
+.panel::after {
+  z-index: -2;
+  filter: blur(18px);
+  opacity: 0;
+}
+
+:global(html:not([data-webgl])) .panel::after,
+:global(html[data-webgl='off']) .panel::after,
+:global(html[data-webgl='failed']) .panel::after,
+:global(html[data-motion='reduced']) .panel::after {
+  opacity: 0.35;
+}
+
+@media not all and (hover: hover) and (pointer: fine) {
+  .panel::after {
+    opacity: 0.35;
+  }
+}
+
+/* Passing under the transparent nav: the surface is in the nav's shade, feathered 32 px below it (4.3 scrims). */
+.panel[data-under-nav]::before,
+.panel[data-under-nav]::after {
+  -webkit-mask-image: linear-gradient(to bottom, transparent var(--nav-cut, 0px), #000 calc(var(--nav-cut, 0px) + 32px));
+  mask-image: linear-gradient(to bottom, transparent var(--nav-cut, 0px), #000 calc(var(--nav-cut, 0px) + 32px));
+}
+
+/* The umber content goes into the shade with its surface (4.3), so labels never sit dark on the dark wall
+   under the nav: it is hidden until the surface is nearly opaque (24 px into its 32 px feather), then
+   wipes in over 12 px. The mask is on the content boxes, offset by the panel's top padding. */
+.panel[data-under-nav] .form {
+  -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--nav-cut, 0px) - var(--pad-y) + 24px), #000 calc(var(--nav-cut, 0px) - var(--pad-y) + 36px));
+  mask-image: linear-gradient(to bottom, transparent calc(var(--nav-cut, 0px) - var(--pad-y) + 24px), #000 calc(var(--nav-cut, 0px) - var(--pad-y) + 36px));
+}
+
+.panel[data-under-nav] .formed {
+  -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--nav-cut, 0px) + 24px), #000 calc(var(--nav-cut, 0px) + 36px));
+  mask-image: linear-gradient(to bottom, transparent calc(var(--nav-cut, 0px) + 24px), #000 calc(var(--nav-cut, 0px) + 36px));
+}
+
+/* Live light on a fine pointer (data-sun): the card is in register with the canvas patch. Its cream
+   (--sun-card), its blurred edge (--sun-feather, the ::after penumbra, strongest half-way) and its umber
+   text (--sun-text, later than the card) follow the commission light's weight, written per frame. */
+.panel[data-sun]::before {
+  opacity: var(--sun-card, 1);
+  transition: opacity var(--dur-tick) linear;
+}
+
+.panel[data-sun]::after {
+  opacity: var(--sun-feather, 0);
+}
+
+.panel[data-sun]:not([data-state='success']) .form {
+  opacity: var(--sun-text, 1);
+  transition:
+    opacity var(--dur-tick) linear,
+    visibility 0s linear 0s;
+}
+
+/* A field in use keeps its surface: never umber text on a half-lit card over the dark wall. */
+.panel[data-sun]:not([data-locked], [data-state='success']):focus-within::before {
+  opacity: 1;
+}
+
+.panel[data-sun]:not([data-state='success']):focus-within .form {
+  opacity: 1;
+}
+
+/* Exactly locked on a fine pointer with Lenis and live light: the plaster itself carries the form. */
+.panel[data-locked]::before {
+  opacity: 0.1;
+  transition: opacity var(--dur-state) var(--ease-focus);
+}
+
+/* Success with live light: the surface opens onto the canvas, where the word forms. */
+:global(html[data-webgl='ready']) .panel[data-state='success']::before {
+  opacity: 0;
+  transition-duration: var(--dur-fade);
+}
+
+.anchor {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+}
+
+/* ── form ───────────────────────────────────────────────────── */
+.form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-5) var(--sp-5);
+  transition:
+    opacity var(--dur-fade) var(--ease-defocus),
+    visibility 0s linear 0s;
+}
+
+.panel[data-state='success'] .form {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--dur-fade) var(--ease-defocus),
+    visibility 0s linear var(--dur-fade);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.label {
+  color: var(--c-umber);
+  margin-bottom: var(--sp-1);
+}
+
+.input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-bottom: var(--hairline) solid var(--c-umber-soft);
+  border-radius: 0;
+  background: transparent;
+  color: var(--c-umber);
+  caret-color: var(--c-umber);
+  max-width: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color var(--dur-tick) var(--ease-focus);
+}
+
+.input:hover {
+  border-bottom-color: var(--c-umber);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--c-umber);
+  outline-offset: 3px;
+  border-bottom-color: var(--c-umber);
+}
+
+.input[aria-invalid='true'] {
+  border-bottom-color: var(--c-rust);
+}
+
+.input::placeholder {
+  color: var(--c-umber-soft);
+}
+
+.time {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The ring sits on a wrapper (:focus-within), so every segment of the time field and its picker
+   indicator show focus, not only the ones the input's own outline happens to cover. */
+.timeWrap {
+  display: block;
+}
+
+.timeWrap:focus-within {
+  outline: 2px solid var(--c-umber);
+  outline-offset: 3px;
+}
+
+.timeWrap .time:focus-visible {
+  outline: none;
+}
+
+.time::-webkit-calendar-picker-indicator {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+/* A drawn chevron (two 1 px strokes), umber, at the right end of the underline. */
+.select {
+  padding-right: var(--sp-6);
+  cursor: pointer;
+  background-image:
+    linear-gradient(45deg, transparent calc(50% - 0.5px), var(--c-umber) calc(50% - 0.5px) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(-45deg, transparent calc(50% - 0.5px), var(--c-umber) calc(50% - 0.5px) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+  background-size: 6px 6px, 6px 6px;
+  background-position: calc(100% - 10px) 50%, calc(100% - 4px) 50%;
+  background-repeat: no-repeat;
+}
+
+.textarea {
+  min-height: 72px;
+  padding-top: 10px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.helper {
+  margin-top: var(--sp-1);
+  color: var(--c-umber-soft);
+}
+
+.error {
+  margin-top: var(--sp-1);
+  color: var(--c-rust);
+  animation: status-in var(--dur-state) var(--ease-focus) both; /* field feedback, 240 ms */
+}
+
+.hint {
+  color: var(--c-umber);
+  margin-top: calc(-1 * var(--sp-2));
+}
+
+.hint:empty {
+  display: none;
+}
+
+.consent {
+  color: var(--c-umber-soft);
+}
+
+.submitRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.submitWrap {
+  display: inline-flex;
+}
+
+.submitWrap:focus {
+  outline: none;
+}
+
+.nojsNote {
+  color: var(--c-umber);
+  max-width: 40ch;
+}
+
+/* ── the formed word, drawn in DOM where the canvas cannot write it (Overcast) ── */
+.formed {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6);
+  color: var(--c-umber);
+  text-align: center;
+  pointer-events: none;
+}
+
+.formed > span {
+  font-size: clamp(3rem, 7vw, 6.5rem);
+  line-height: 1;
+  overflow-wrap: anywhere;
+  animation: formed-in var(--dur-refocus) var(--ease-focus) both;
+}
+
+:global(html:not([data-webgl='ready'])) .panel[data-state='success'] .formed {
+  display: flex;
+}
+
+@keyframes formed-in {
+  from {
+    opacity: 0;
+  }
+}
+
+:global(html[data-motion='reduced']) .formed > span,
+:global(html[data-motion='reduced']) .status[data-filled],
+:global(html[data-motion='reduced']) .error {
+  animation: none;
+}
+
+/* Stacked success: the form has faded; the panel folds to a small wall of light for the word. */
+@media (max-width: 1023px), (max-aspect-ratio: 8999 / 10000) {
+  .panel[data-collapsed] {
+    aspect-ratio: 1.5 / 1;
+  }
+
+  .panel[data-collapsed] .form {
+    display: none;
+  }
+}
+
+/* ── md: two-column field grid ──────────────────────────────── */
+@media (min-width: 768px) {
+  .form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .panel {
+    --pad-y: var(--sp-7);
+    margin-inline: 0;
+    padding: var(--pad-y) 48px;
+  }
+
+  .head {
+    grid-column: 1 / span 6;
+  }
+}
+
+/* ── split: the form in the light, left; heading right (mirrored, 5.7) ── */
+@media (min-width: 1024px) and (min-aspect-ratio: 9 / 10) {
+  .section {
+    --panel-skew: 8deg;
+    padding-bottom: 18svh; /* panel bottom stays above the dusk rest's top edge (see .inner) */
+  }
+
+  .inner {
+    min-height: 100svh;
+    padding-top: 0;
+    padding-bottom: 0;
+    align-items: center;
+  }
+
+  /* Columns 8 to 12 as a subgrid: the H2 hangs one column left of the sub and note (at 190% width four
+     columns held one word a line), and it still clears the skewed panel, whose top-right corner leans
+     left. Sticky at 14% through the live rest interval: the 68svh box ends 18svh above the section's
+     100svh row, which is exactly the rest interval (the section's padding-bottom), so the block leaves
+     with the panel at b. */
+  .head {
+    grid-column: 8 / -1;
+    grid-row: 1;
+    align-self: start;
+    margin-top: 14svh;
+    position: sticky;
+    top: 14svh;
+    min-height: 68svh;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-content: start;
+  }
+
+  /* 72 px under the hanging H2: its scrim box and the body's stay more than the conductor's 64 px join
+     distance apart, so they are never joined into one box that would clip the lit panel's slanted edge. */
+  .h2 {
+    grid-column: 1 / -1;
+    margin-bottom: 72px;
+  }
+
+  .headBody {
+    grid-column: 2 / -1;
+  }
+
+  .panel {
+    grid-column: 1 / span 7;
+    grid-row: 1;
+    align-self: center;
+    --pad-y: 40px;
+    padding: var(--pad-y) 48px;
+    margin-top: calc(var(--nav-h) / 2);
+  }
+}

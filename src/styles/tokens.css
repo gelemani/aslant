@@ -1,0 +1,80 @@
+:root {
+  color-scheme: dark;
+
+  /* colour */
+  --c-shade: #3A4142;
+  --c-recess: #30363A;
+  --c-line: #5B6361;
+  --c-lime: #ECE6D9;
+  --c-dust: #BCC3BE;
+  --c-sun: #FFE1A6;
+  --c-sun-hi: #FFE9BD;
+  --c-sunlit: #E9DCBF;
+  --c-umber: #1E2224;
+  --c-umber-soft: #4E4A42;
+  --c-rust: #8C3A14;
+  --c-rust-light: #FFB08A;
+  --c-dusk: #272C36;
+  --c-ember: #FF9B54;
+  --c-predawn: #2C3237;
+  --c-field: #8C8C8C;
+  --c-field-ink: #16181A;
+
+  /* families (variables come from next/font) */
+  --f-display: var(--font-sprat), 'Times New Roman', serif;
+  --f-text: var(--font-geologica-ext), var(--font-geologica), system-ui, sans-serif;
+
+  /* type sizes */
+  --t-clock: clamp(4rem, 13vw, 13rem);
+  --t-hero: clamp(2.25rem, 10.4vw, 2.75rem);
+  --t-h2: clamp(2rem, 3.4vw, 3.5rem);
+  --t-year: clamp(3rem, 4.2vw, 4rem);
+  --t-h3: clamp(1.5rem, 2vw, 1.875rem);
+  --t-menu: clamp(2.25rem, 4.6vw, 3.75rem);
+  --t-wordmark: 28px;
+  --t-footmark: clamp(5rem, 16vw, 15rem);
+  --t-lead: 1.125rem;
+  --t-body: 1.0625rem;
+  --t-ui: 0.9375rem;
+  --t-label: 0.8125rem;
+  --t-value: 0.9375rem;
+  --t-caption: 0.875rem;
+
+  /* spacing */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px;
+  --sp-7: 48px; --sp-8: 64px; --sp-9: 96px; --sp-10: 128px; --sp-11: 192px;
+
+  /* grid */
+  --cols: 4; --gutter: 16px; --margin: 16px; --grid-max: 1800px;
+  --nav-h: 56px;
+
+  /* shape */
+  --radius: 0; --hairline: 1px;
+
+  /* layers */
+  --z-canvas: 0; --z-poster: 1; --z-content: 10; --z-overlay: 20; --z-loader: 40;
+  --z-nav: 50; --z-menu: 60; --z-dialog: 70; --z-epilogue: 80; --z-skip: 100;
+
+  /* motion */
+  --ease-focus: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-defocus: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-light: cubic-bezier(0.45, 0, 0.2, 1);
+  --ease-shutter: cubic-bezier(0.7, 0, 0.2, 1);
+  --dur-tick: 120ms; --dur-state: 240ms; --dur-fade: 400ms; --dur-copy: 500ms;
+  --dur-close: 450ms; --dur-shutter: 700ms; --dur-sweep: 900ms; --dur-focus: 900ms;
+  --dur-timelapse: 1400ms; --dur-refocus: 1600ms; --dur-form: 2200ms;
+}
+
+@media (min-width: 480px) { :root { --margin: 24px; } }
+@media (min-width: 768px) {
+  :root {
+    --cols: 8; --gutter: 20px; --margin: 40px; --nav-h: 72px;
+    --t-hero: 5.2vw; --t-lead: 1.25rem; --t-wordmark: 34px;
+  }
+}
+@media (min-width: 1024px) {
+  :root { --cols: 12; --gutter: 24px; --margin: 5.5vw; --t-hero: clamp(2.75rem, 4.4vw, 4.75rem); }
+}
+@media (min-width: 1440px) {
+  :root { --gutter: 28px; --margin: clamp(79px, 5.5vw, 120px); }
+}

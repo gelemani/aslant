@@ -1,0 +1,38 @@
+/* The fixed canvas host (4.2). 100lvh, never inset: 0: its height must not change when
+   mobile toolbars collapse or expand (each change would clear the buffer). */
+.root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100lvh;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+  contain: strict;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--dur-state) linear,
+    visibility 0s linear var(--dur-state);
+}
+
+/* Fade in after the Scene's first full frame; Overcast hides it (the Stage stays mounted
+   so a context restore can bring it back). */
+:global(html[data-webgl='ready']) .canvas {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--dur-fade) var(--ease-focus),
+    visibility 0s;
+}
+
+/* Still routes and reduced motion show the frame at once. */
+:global(html[data-still]) .canvas,
+:global(html[data-motion='reduced']) .canvas {
+  transition: none;
+}
